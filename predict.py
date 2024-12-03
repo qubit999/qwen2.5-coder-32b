@@ -1,5 +1,9 @@
-from cog import BasePredictor, Input, Path
+import os
 import torch
+
+os.getenv("TORCH_USE_CUDA_DSA", "1")
+
+from cog import BasePredictor, Input, Path
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation import GenerationConfig
 
@@ -10,8 +14,8 @@ TOKEN_CACHE = "token-cache"
 class Predictor(BasePredictor):
     def setup(self) -> None:
         """Load the model into memory to make running multiple predictions efficient"""
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        self.model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype="auto", device_map="auto").eval()
+        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
+        self.model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype="auto", device_map="auto", trust_remote_code=True).eval()
 
     def predict(
         self,
@@ -56,12 +60,18 @@ class Predictor(BasePredictor):
 
     def cleanup(self):
         """Cleanup after each prediction to save memory"""
-        self.model.zero_grad()
+        if self.model is not None:
+            self.model.zero_grad()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        import gc
+        gc.collect()
         # Additional cleanup if necessary
 
 if __name__ == "__main__":
     predictor = Predictor()
     predictor.setup()
     print(predictor.predict(prompt="Write a hello world program in Python"))
+    predictor.cleanup()
     print(predictor.predict_code(prompt="if True: print('Hello, World')"))
     predictor.cleanup()
