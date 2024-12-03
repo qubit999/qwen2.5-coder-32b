@@ -33,6 +33,7 @@ class Predictor(BasePredictor):
             input_ids=model_inputs.input_ids,
             attention_mask=model_inputs.attention_mask,
             max_new_tokens=4096,
+            do_sample=True,
         )
 
         generated_ids = [
@@ -52,9 +53,10 @@ class Predictor(BasePredictor):
             input_ids=model_inputs.input_ids,
             attention_mask=model_inputs.attention_mask,
             max_new_tokens=4096,
-            do_sample=True
-        )[0]
-        output_text = self.tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
+            do_sample=True,
+        )
+        generated_ids = generated_ids[0][len(model_inputs.input_ids[0]):]
+        output_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
         return output_text
 
