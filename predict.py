@@ -71,9 +71,11 @@ class Predictor(BasePredictor):
         # Additional cleanup if necessary
 
 if __name__ == "__main__":
-    predictor = Predictor()
-    predictor.setup()
-    print(predictor.predict(prompt="Write a hello world program in Python"))
-    predictor.cleanup()
-    print(predictor.predict_code(prompt="if True: print('Hello, World')"))
-    predictor.cleanup()
+    run_bool = False
+    if run_bool:
+        predictor = Predictor()
+        predictor.setup()
+        print(predictor.predict(prompt="Write a hello world program in Python"))
+        predictor.cleanup()
+        print(predictor.predict_code(prompt="if True: print('Hello, World')"))
+        predictor.cleanup()
