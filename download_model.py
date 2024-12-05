@@ -11,6 +11,7 @@ model = AutoModelForCausalLM.from_pretrained(
     cache_dir=cache,
     torch_dtype=torch.float16,  # Load in half precision
     low_cpu_mem_usage=True,     # Reduce memory usage during loading
+    device_map="auto",          # Use mixed precision
 )
 
 # Save locally

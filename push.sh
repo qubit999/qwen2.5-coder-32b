@@ -1,0 +1,1 @@
+sudo cog push r8.im/qubit999/qwen2.5-coder-32b-instruct

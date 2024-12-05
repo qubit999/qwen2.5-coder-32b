@@ -27,7 +27,6 @@ class Predictor(BasePredictor):
         top_k : int = Input(description="Top K", default=50),
         top_p : float = Input(description="Top P", default=0.9),
         repetition_penalty : float = Input(description="Repetition Penalty", default=1.0),
-        seed : int = Input(description="Seed", default=42),
         do_sample : bool = Input(description="Do Sample", default=True),
     ) -> str:
         """Run a single prediction on the model"""
@@ -63,10 +62,6 @@ class Predictor(BasePredictor):
             repetition_penalty = repetition_penalty
         else:
             repetition_penalty = repetition_penalty.default
-        if(isinstance(seed, int)):
-            seed = seed
-        else:
-            seed = seed.default
         if(isinstance(do_sample, bool)):
             do_sample = do_sample
         else:
@@ -88,7 +83,6 @@ class Predictor(BasePredictor):
             top_k=top_k,
             top_p=top_p,
             repetition_penalty=repetition_penalty,
-            seed=seed,
             do_sample=do_sample,
         )
 
