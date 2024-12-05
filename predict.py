@@ -121,7 +121,7 @@ class Predictor(BasePredictor):
         # Additional cleanup if necessary
 
 if __name__ == "__main__":
-    run_bool = True
+    run_bool = False
     if run_bool:
         predictor = Predictor()
         predictor.setup()
