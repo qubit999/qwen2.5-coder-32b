@@ -19,11 +19,61 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        prompt: str = Input(description="Question", default="Write a hello world program in Python."),
+        prompt: str = Input(description="User Prompt", default="Write a hello world program in Python."),
+        system_prompt : str = Input(description="System Prompt", default="You are Qwen. You are a helpful assistant."),
+        max_new_tokens : int = Input(description="Max New Tokens", default=4096),
+        min_new_tokens : int = Input(description="Min New Tokens", default=1),
+        temperature : float = Input(description="Temperature", default=0.7),
+        top_k : int = Input(description="Top K", default=50),
+        top_p : float = Input(description="Top P", default=0.9),
+        repetition_penalty : float = Input(description="Repetition Penalty", default=1.0),
+        seed : int = Input(description="Seed", default=42),
+        do_sample : bool = Input(description="Do Sample", default=True),
     ) -> str:
         """Run a single prediction on the model"""
+        if(isinstance(prompt, str)):
+            prompt = prompt
+        else:
+            prompt = prompt.default
+        if(isinstance(system_prompt, str)):
+            system_prompt = system_prompt
+        else:
+            system_prompt = system_prompt.default
+        if(isinstance(max_new_tokens, int)):
+            max_new_tokens = max_new_tokens
+        else:
+            max_new_tokens = max_new_tokens.default
+        if(isinstance(min_new_tokens, int)):
+            min_new_tokens = min_new_tokens
+        else:
+            min_new_tokens = min_new_tokens.default
+        if(isinstance(temperature, float)):
+            temperature = temperature
+        else:
+            temperature = temperature.default
+        if(isinstance(top_k, int)):
+            top_k = top_k
+        else:
+            top_k = top_k.default
+        if(isinstance(top_p, float)):
+            top_p = top_p
+        else:
+            top_p = top_p.default
+        if(isinstance(repetition_penalty, float)):
+            repetition_penalty = repetition_penalty
+        else:
+            repetition_penalty = repetition_penalty.default
+        if(isinstance(seed, int)):
+            seed = seed
+        else:
+            seed = seed.default
+        if(isinstance(do_sample, bool)):
+            do_sample = do_sample
+        else:
+            do_sample = do_sample.default
+
         messages = [
-            {"role": "system", "content": "You are Qwen. You are a helpful assistant."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ]
         text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -32,8 +82,14 @@ class Predictor(BasePredictor):
         generated_ids = self.model.generate(
             input_ids=model_inputs.input_ids,
             attention_mask=model_inputs.attention_mask,
-            max_new_tokens=4096,
-            do_sample=True,
+            max_new_tokens=max_new_tokens,
+            min_new_tokens=min_new_tokens,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            do_sample=do_sample,
         )
 
         generated_ids = [
@@ -71,11 +127,9 @@ class Predictor(BasePredictor):
         # Additional cleanup if necessary
 
 if __name__ == "__main__":
-    run_bool = False
+    run_bool = True
     if run_bool:
         predictor = Predictor()
         predictor.setup()
-        print(predictor.predict(prompt="Write a hello world program in Python"))
-        predictor.cleanup()
-        print(predictor.predict_code(prompt="if True: print('Hello, World')"))
+        print(predictor.predict())
         predictor.cleanup()
